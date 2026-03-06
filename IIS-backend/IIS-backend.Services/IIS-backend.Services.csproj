@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>IIS_backend.Services</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IIS-backend.DataAccess\IIS-backend.DataAccess.csproj" />
+    <ProjectReference Include="..\IIS-backend.Domain\IIS-backend.Domain.csproj" />
+    <ProjectReference Include="..\IIS-backend.Services.Interfaces\IIS-backend.Services.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
