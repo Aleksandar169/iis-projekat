@@ -36,8 +36,7 @@ builder.Services.AddSerilog((services, lc) =>
 
 // configure EF Core (PostgreSQL)
 builder.Services.AddDbContext<Context>(options =>
-    options.UseNpgsql(builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"]));
-
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // configure exchange rate http client
 
 

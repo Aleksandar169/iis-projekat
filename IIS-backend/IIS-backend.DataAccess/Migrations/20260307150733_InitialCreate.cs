@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,13 +16,13 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Location = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DiscountValidUntil = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AdditionalInfo = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DiscountValidUntil = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AdditionalInfo = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -35,9 +34,9 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CurrencyName = table.Column<string>(type: "text", nullable: false),
-                    Code = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CurrencyName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,10 +48,10 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Code = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    UsageDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    UsageDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,11 +63,11 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    TicketCode = table.Column<string>(type: "text", nullable: false),
-                    ErrorMessage = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TicketCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,9 +79,9 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    BasePrice = table.Column<decimal>(type: "numeric", nullable: false),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CompetitionId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -101,10 +100,10 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Capacity = table.Column<int>(type: "integer", nullable: false),
-                    Characteristics = table.Column<string>(type: "text", nullable: false),
-                    PriceAddon = table.Column<decimal>(type: "numeric", nullable: false),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    Characteristics = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PriceAddon = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CompetitionId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -147,9 +146,9 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ExchangeRate = table.Column<decimal>(type: "numeric", nullable: false),
-                    FinalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExchangeRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    FinalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SelectedCurrencyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -168,17 +167,17 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    City = table.Column<string>(type: "text", nullable: false),
-                    Country = table.Column<string>(type: "text", nullable: false),
-                    AddressLine = table.Column<string>(type: "text", nullable: false),
-                    PostalCode = table.Column<string>(type: "text", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    TicketCode = table.Column<string>(type: "text", nullable: false),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddressLine = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    TicketCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PaymentSnapshotId = table.Column<long>(type: "bigint", nullable: false),
                     IssuedPromoCodeId = table.Column<long>(type: "bigint", nullable: false),
                     UsedPromoCodeId = table.Column<long>(type: "bigint", nullable: true)
@@ -211,7 +210,7 @@ namespace IIS_backend.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     TicketId = table.Column<long>(type: "bigint", nullable: false),
                     DayId = table.Column<long>(type: "bigint", nullable: false),
                     ZoneId = table.Column<long>(type: "bigint", nullable: false)
@@ -316,7 +315,8 @@ namespace IIS_backend.DataAccess.Migrations
                 name: "IX_Tickets_UsedPromoCodeId",
                 table: "Tickets",
                 column: "UsedPromoCodeId",
-                unique: true);
+                unique: true,
+                filter: "[UsedPromoCodeId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Zones_CompetitionId_Characteristics",

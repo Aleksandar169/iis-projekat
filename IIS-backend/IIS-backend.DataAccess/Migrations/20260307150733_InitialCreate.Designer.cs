@@ -3,16 +3,16 @@ using System;
 using IIS_backend.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace IIS_backend.DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20260305211543_InitialCreate")]
+    [Migration("20260307150733_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -21,9 +21,9 @@ namespace IIS_backend.DataAccess.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("IIS_backend.Domain.Entities.Competition", b =>
                 {
@@ -31,27 +31,27 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AdditionalInfo")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DiscountValidUntil")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -79,15 +79,15 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CurrencyName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -106,16 +106,16 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("BasePrice")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long>("CompetitionId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -131,13 +131,13 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("ExchangeRate")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("FinalAmount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long>("SelectedCurrencyId")
                         .HasColumnType("bigint");
@@ -155,17 +155,17 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UsageDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -181,51 +181,51 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AddressLine")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("IssuedPromoCodeId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("PaymentSnapshotId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("TicketCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<long?>("UsedPromoCodeId")
                         .HasColumnType("bigint");
@@ -241,7 +241,8 @@ namespace IIS_backend.DataAccess.Migrations
                         .IsUnique();
 
                     b.HasIndex("UsedPromoCodeId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UsedPromoCodeId] IS NOT NULL");
 
                     b.ToTable("Tickets");
                 });
@@ -252,22 +253,22 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ErrorMessage")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TicketCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -283,7 +284,7 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("DayId")
                         .HasColumnType("bigint");
@@ -312,20 +313,20 @@ namespace IIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int>("Capacity")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Characteristics")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<long>("CompetitionId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("PriceAddon")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
