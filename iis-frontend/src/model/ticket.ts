@@ -73,3 +73,33 @@ export interface CancelTicketDto {
     email: string;
     ticketCode: string;
 }
+
+export interface CalculateTicketDto {
+    selections: TicketSelectionDto[];
+    promoCode?: string | null;
+    selectedCurrencyId: number;
+}
+
+export interface CalculatedTicketItemDto {
+    dayId: number;
+    dayDate: string;
+    basePriceRsd: number;
+    zoneId: number;
+    zoneCharacteristics: string;
+    zoneAddonRsd: number;
+    itemTotalRsd: number;
+}
+
+export interface CalculateTicketResponseDto {
+    items: CalculatedTicketItemDto[];
+    subtotalRsd: number;
+    dateDiscountApplied: boolean;
+    dateDiscountAmountRsd: number;
+    promoDiscountApplied: boolean;
+    promoDiscountAmountRsd: number;
+    totalAfterDiscountsRsd: number;
+    selectedCurrencyId: number;
+    currencyCode: string;
+    exchangeRate: number;
+    finalAmount: number;
+}

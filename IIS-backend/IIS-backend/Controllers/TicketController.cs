@@ -5,8 +5,6 @@ using IIS_backend.HostedService;
 using IIS_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
-using System.Threading.Tasks;
-using System;
 
 namespace IIS_backend.Controllers
 {
@@ -37,7 +35,18 @@ namespace IIS_backend.Controllers
             return err?.ToErrorDto();
         }
 
-        // Feature 3 (var C): prvo u queue
+        [HttpPost("calculate")]
+        public async Task<CalculateTicketResponseDto> Calculate([FromBody] CalculateTicketDto dto)
+        {
+            var result = await _ticketService.CalculatePreview(
+                dto.Selections.ToSelections(),
+                dto.PromoCode,
+                dto.SelectedCurrencyId
+            );
+
+            return result.ToDto();
+        }
+
         [HttpPost("create")]
         public CreateTicketResponseMessage Create([FromBody] CreateTicketDto dto)
         {
@@ -61,7 +70,6 @@ namespace IIS_backend.Controllers
             };
         }
 
-        // Feature 4.1 - dodavanje dana
         [HttpPost("add")]
         public async Task<GetTicketDto> Add([FromBody] ModifyTicketAddDto dto)
         {
@@ -89,7 +97,6 @@ namespace IIS_backend.Controllers
             return reloaded.ToDto();
         }
 
-        // Feature 4.2 - uklanjanje dana
         [HttpPost("remove")]
         public async Task<GetTicketDto> Remove([FromBody] ModifyTicketRemoveDto dto)
         {
@@ -117,7 +124,6 @@ namespace IIS_backend.Controllers
             return reloaded.ToDto();
         }
 
-        // Feature 5 - otkazivanje
         [HttpPost("cancel")]
         public async Task Cancel([FromBody] CancelTicketDto dto)
         {

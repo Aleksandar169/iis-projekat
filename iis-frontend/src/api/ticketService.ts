@@ -1,6 +1,8 @@
 import { apiRequest } from './apiClient';
 import type {
     CancelTicketDto,
+    CalculateTicketDto,
+    CalculateTicketResponseDto,
     CreateTicketDto,
     CreateTicketResponseMessage,
     GetTicketDto,
@@ -26,6 +28,13 @@ export const ticketService = {
         });
 
         return apiRequest<TicketErrorDto>(`/Ticket/error?${params.toString()}`);
+    },
+
+    async calculate(dto: CalculateTicketDto): Promise<CalculateTicketResponseDto> {
+        return apiRequest<CalculateTicketResponseDto>('/Ticket/calculate', {
+            method: 'POST',
+            body: JSON.stringify(dto),
+        });
     },
 
     async create(dto: CreateTicketDto): Promise<CreateTicketResponseMessage> {

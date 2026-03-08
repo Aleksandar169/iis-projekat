@@ -36,6 +36,121 @@ public class TicketService : ITicketService
             .FirstOrDefaultAsync(x => x.Email == email && x.TicketCode == ticketCode);
     }
 
+    public async Task<TicketCalculationResult> CalculatePreview(
+        List<TicketSelection> selections,
+        string? promoCode,
+        long selectedCurrencyId)
+    {
+        var competition = await _context.Competitions.FirstOrDefaultAsync();
+        if (competition == null) throw new Exception("Competition not found.");
+
+        var allowedCurrencyIds = await _context.CompetitionCurrencies
+            .Where(x => x.CompetitionId == competition.Id)
+            .Select(x => x.CurrencyId)
+            .ToListAsync();
+
+        if (!allowedCurrencyIds.Contains(selectedCurrencyId))
+            throw new Exception("Odabrana valuta nije dozvoljena za ovo takmičenje.");
+
+        var currency = await _context.Currencies.FirstOrDefaultAsync(x => x.Id == selectedCurrencyId);
+        if (currency == null) throw new Exception("Valuta ne postoji.");
+
+        if (selections == null || selections.Count == 0)
+            throw new Exception("Mora se izabrati bar jedan dan i zona.");
+
+        if (selections.Select(s => s.DayId).Distinct().Count() != selections.Count)
+            throw new Exception("Za isti dan ne možeš izabrati više zona u jednoj karti.");
+
+        var items = new List<TicketCalculationItem>();
+        decimal subtotalRsd = 0m;
+
+        foreach (var sel in selections)
+        {
+            var day = await _context.Days.FirstOrDefaultAsync(d => d.Id == sel.DayId);
+            if (day == null) throw new Exception($"Dan {sel.DayId} nije pronađen.");
+
+            var zone = await _context.Zones.FirstOrDefaultAsync(z => z.Id == sel.ZoneId);
+            if (zone == null) throw new Exception($"Zona {sel.ZoneId} nije pronađena.");
+
+            if (day.CompetitionId != competition.Id || zone.CompetitionId != competition.Id)
+                throw new Exception("Dan i/ili zona ne pripadaju ovom takmičenju.");
+
+            var activeCount = await _context.TicketItems
+                .Include(ti => ti.Ticket)
+                .CountAsync(ti => ti.DayId == sel.DayId && ti.ZoneId == sel.ZoneId && ti.Ticket.Status == TicketStatus.Active);
+
+            if (activeCount >= zone.Capacity)
+                throw new Exception("Nema slobodnih mesta u izabranoj zoni za taj dan.");
+
+            var itemTotal = day.BasePrice + zone.PriceAddon;
+            subtotalRsd += itemTotal;
+
+            items.Add(new TicketCalculationItem
+            {
+                DayId = day.Id,
+                DayDate = day.Date,
+                BasePriceRsd = day.BasePrice,
+                ZoneId = zone.Id,
+                ZoneCharacteristics = zone.Characteristics,
+                ZoneAddonRsd = zone.PriceAddon,
+                ItemTotalRsd = itemTotal
+            });
+        }
+
+        bool dateDiscountApplied = DateTime.UtcNow.Date <= competition.DiscountValidUntil.Date;
+        decimal dateDiscountAmountRsd = dateDiscountApplied ? subtotalRsd * 0.1m : 0m;
+
+        decimal afterDateDiscountRsd = subtotalRsd - dateDiscountAmountRsd;
+
+        bool promoDiscountApplied = false;
+        decimal promoDiscountAmountRsd = 0m;
+
+        if (!string.IsNullOrWhiteSpace(promoCode))
+        {
+            var usedPromo = await _context.PromoCodes.FirstOrDefaultAsync(x =>
+                x.Code == promoCode && x.Status == PromoCodeStatus.Active);
+
+            if (usedPromo == null)
+                throw new Exception("Promo kod nije validan.");
+
+            promoDiscountApplied = true;
+            promoDiscountAmountRsd = afterDateDiscountRsd * 0.05m;
+        }
+
+        decimal totalAfterDiscountsRsd = afterDateDiscountRsd - promoDiscountAmountRsd;
+
+        decimal exchangeRate;
+        decimal finalAmount;
+
+        if (currency.Code.Equals("RSD", StringComparison.OrdinalIgnoreCase))
+        {
+            exchangeRate = 1m;
+            finalAmount = totalAfterDiscountsRsd;
+        }
+        else
+        {
+            var rate = await _exchangeRateClient.GetRateAsync(currency.Code);
+
+            exchangeRate = rate;
+            finalAmount = totalAfterDiscountsRsd / rate;
+        }
+
+        return new TicketCalculationResult
+        {
+            Items = items.OrderBy(x => x.DayDate).ToList(),
+            SubtotalRsd = decimal.Round(subtotalRsd, 2),
+            DateDiscountApplied = dateDiscountApplied,
+            DateDiscountAmountRsd = decimal.Round(dateDiscountAmountRsd, 2),
+            PromoDiscountApplied = promoDiscountApplied,
+            PromoDiscountAmountRsd = decimal.Round(promoDiscountAmountRsd, 2),
+            TotalAfterDiscountsRsd = decimal.Round(totalAfterDiscountsRsd, 2),
+            SelectedCurrencyId = currency.Id,
+            CurrencyCode = currency.Code,
+            ExchangeRate = exchangeRate,
+            FinalAmount = decimal.Round(finalAmount, 2)
+        };
+    }
+
     public async Task<Ticket> CreateTicket(Ticket ticket, List<TicketSelection> selections, string? promoCode, long selectedCurrencyId)
     {
         try
@@ -43,54 +158,13 @@ public class TicketService : ITicketService
             if (ticket.Id != 0) throw new Exception("Nova karta ne sme imati postojeći ID.");
             if (ticket.TicketItems.Count > 0) throw new Exception("Nova karta ne sme imati unapred vezane stavke.");
 
-            var competition = await _context.Competitions.FirstOrDefaultAsync();
-            if (competition == null) throw new Exception("Competition not found.");
-
-            // valuta mora biti dozvoljena
-            var allowedCurrencyIds = await _context.CompetitionCurrencies
-                .Where(x => x.CompetitionId == competition.Id)
-                .Select(x => x.CurrencyId)
-                .ToListAsync();
-
-            if (!allowedCurrencyIds.Contains(selectedCurrencyId))
-                throw new Exception("Odabrana valuta nije dozvoljena za ovo takmičenje.");
+            var preview = await CalculatePreview(selections, promoCode, selectedCurrencyId);
 
             var currency = await _context.Currencies.FirstOrDefaultAsync(x => x.Id == selectedCurrencyId);
             if (currency == null) throw new Exception("Valuta ne postoji.");
 
-            // Build ticket items + capacity checks
-            // Pravilo: bira se zona za svaki dan (selections DayId+ZoneId)
-            if (selections == null || selections.Count == 0)
-                throw new Exception("Mora se izabrati bar jedan dan i zona.");
-
-            // ne dozvoli dupli day
-            if (selections.Select(s => s.DayId).Distinct().Count() != selections.Count)
-                throw new Exception("Za isti dan ne možeš izabrati više zona u jednoj karti.");
-
-            decimal totalRsd = 0m;
-
             foreach (var sel in selections)
             {
-                var day = await _context.Days.FirstOrDefaultAsync(d => d.Id == sel.DayId);
-                if (day == null) throw new Exception($"Dan {sel.DayId} nije pronađen.");
-
-                var zone = await _context.Zones.FirstOrDefaultAsync(z => z.Id == sel.ZoneId);
-                if (zone == null) throw new Exception($"Zona {sel.ZoneId} nije pronađena.");
-
-                // oba moraju pripadati istom competition-u
-                if (day.CompetitionId != competition.Id || zone.CompetitionId != competition.Id)
-                    throw new Exception("Dan i/ili zona ne pripadaju ovom takmičenju.");
-
-                // capacity: broj aktivnih karata u toj kombinaciji day+zone < zone.Capacity
-                var activeCount = await _context.TicketItems
-                    .Include(ti => ti.Ticket)
-                    .CountAsync(ti => ti.DayId == sel.DayId && ti.ZoneId == sel.ZoneId && ti.Ticket.Status == TicketStatus.Active);
-
-                if (activeCount >= zone.Capacity)
-                    throw new Exception("Nema slobodnih mesta u izabranoj zoni za taj dan.");
-
-                totalRsd += day.BasePrice + zone.PriceAddon;
-
                 ticket.TicketItems.Add(new TicketItem
                 {
                     DayId = sel.DayId,
@@ -98,13 +172,6 @@ public class TicketService : ITicketService
                 });
             }
 
-            // Popust 10% do datuma
-            if (DateTime.UtcNow.Date <= competition.DiscountValidUntil.Date)
-            {
-                totalRsd *= 0.9m;
-            }
-
-            // Promo kod 5%
             PromoCode? usedPromo = null;
             if (!string.IsNullOrWhiteSpace(promoCode))
             {
@@ -118,39 +185,13 @@ public class TicketService : ITicketService
                 usedPromo.UsageDate = DateTime.UtcNow;
 
                 ticket.UsedPromoCodeId = usedPromo.Id;
-                totalRsd *= 0.95m;
-            }
-
-            // Payment snapshot (konverzija)
-            decimal finalAmount;
-            decimal exchangeRate;
-
-            if (currency.Code.Equals("RSD", StringComparison.OrdinalIgnoreCase))
-            {
-                finalAmount = totalRsd;
-                exchangeRate = 1m;
-            }
-            else
-            {
-                // koristimo EUR kao bazu u frankfurter-u: 1 EUR = rate target
-                // Nama treba cena u target valuti. Ako je totalRsd u RSD, a target npr EUR, moramo:
-                // 1 EUR = rateRsd RSD => 1 RSD = 1/rateRsd EUR => totalRsd / rateRsd = EUR.
-                // za target X: totalRsd / rateRsd * rateX (jer totalEUR * rateX = X)
-                var rateRsd = await _exchangeRateClient.GetRateAsync("RSD"); // 1 EUR = rateRsd RSD
-                var totalEur = totalRsd / rateRsd;
-
-                var rateTarget = await _exchangeRateClient.GetRateAsync(currency.Code); // 1 EUR = rateTarget target
-                finalAmount = totalEur * rateTarget;
-
-                // snapshot: čuvamo kurs za target (1 EUR = rateTarget target) radi traganja
-                exchangeRate = rateTarget;
             }
 
             var paymentSnapshot = new PaymentSnapshot
             {
                 SelectedCurrencyId = currency.Id,
-                ExchangeRate = exchangeRate,
-                FinalAmount = decimal.Round(finalAmount, 2)
+                ExchangeRate = preview.ExchangeRate,
+                FinalAmount = preview.FinalAmount
             };
 
             _context.PaymentSnapshots.Add(paymentSnapshot);
@@ -160,7 +201,6 @@ public class TicketService : ITicketService
             ticket.PurchaseDate = DateTime.UtcNow;
             ticket.Status = TicketStatus.Active;
 
-            // uvek izdaj promo kod
             var issued = new PromoCode
             {
                 Code = Guid.NewGuid().ToString("N")[..8],
@@ -206,12 +246,10 @@ public class TicketService : ITicketService
         var competition = await _context.Competitions.FirstOrDefaultAsync();
         if (competition == null) throw new Exception("Competition not found.");
 
-        // ne dozvoli dodavanje dana koji već postoji
         var existingDayIds = ticket.TicketItems.Select(ti => ti.DayId).ToHashSet();
         if (add.Any(a => existingDayIds.Contains(a.DayId)))
             throw new Exception("Ne možeš dodati dan koji već postoji na karti.");
 
-        // dodaj uz capacity check
         foreach (var sel in add)
         {
             var day = await _context.Days.FirstOrDefaultAsync(d => d.Id == sel.DayId);
@@ -257,7 +295,6 @@ public class TicketService : ITicketService
         var toRemove = ticket.TicketItems.Where(ti => dayIdsToRemove.Contains(ti.DayId)).ToList();
         if (toRemove.Count == 0) throw new Exception("Nijedan od navedenih dana nije na karti.");
 
-        // ne dozvoli da ostane bez ijednog dana (logično za kartu)
         if (ticket.TicketItems.Count - toRemove.Count <= 0)
             throw new Exception("Karta mora sadržati bar jedan dan.");
 
@@ -282,8 +319,6 @@ public class TicketService : ITicketService
         if (ticket.Status == TicketStatus.Cancelled) throw new Exception("Karta je već otkazana.");
 
         ticket.Status = TicketStatus.Cancelled;
-
-        // Promo-kod otkazane karte postaje nevažeći
         ticket.IssuedPromoCode.Status = PromoCodeStatus.Inactive;
 
         await _context.SaveChangesAsync();
@@ -292,10 +327,8 @@ public class TicketService : ITicketService
 
     private async Task RecalculatePayment(Ticket ticket, Competition competition)
     {
-        // ponovo izračunaj u RSD
         decimal totalRsd = 0m;
 
-        // učitaj day + zone za svaku stavku
         foreach (var item in ticket.TicketItems)
         {
             var day = await _context.Days.FirstOrDefaultAsync(d => d.Id == item.DayId);
@@ -313,11 +346,9 @@ public class TicketService : ITicketService
 
         if (ticket.UsedPromoCodeId != null)
         {
-            // Promo kod je već iskorišćen na ovoj karti (status Used), popust ostaje
             totalRsd *= 0.95m;
         }
 
-        // zadrži odabranu valutu iz PaymentSnapshot-a
         var currency = await _context.Currencies.FirstOrDefaultAsync(c => c.Id == ticket.PaymentSnapshot.SelectedCurrencyId);
         if (currency == null) throw new Exception("Valuta nije pronađena.");
 
