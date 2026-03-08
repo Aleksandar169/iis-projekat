@@ -3,12 +3,7 @@ using IIS_backend.Domain.Events;
 using IIS_backend.DTOs.Ticket;
 using IIS_backend.Services.Interfaces;
 using StackExchange.Redis;
-using Microsoft.Extensions.Hosting;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using System;
+
 
 namespace IIS_backend.HostedService
 {
@@ -61,8 +56,14 @@ namespace IIS_backend.HostedService
                         Data = JsonSerializer.Serialize(new TicketCreatedEventData
                         {
                             TicketId = created.Id,
+                            TicketCode = created.TicketCode,
+                            Email = created.Email,
                             Country = created.Country,
-                            CreatedAt = DateTime.UtcNow
+                            PurchaseDate = created.PurchaseDate,
+                            CompetitionDays = created.TicketItems
+                                .Select(x => x.Day.Date)
+                                .OrderBy(x => x)
+                                .ToList()
                         })
                     };
 

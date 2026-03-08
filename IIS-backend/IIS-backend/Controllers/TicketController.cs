@@ -5,6 +5,7 @@ using IIS_backend.HostedService;
 using IIS_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
+using System.Linq;
 
 namespace IIS_backend.Controllers
 {
@@ -85,7 +86,11 @@ namespace IIS_backend.Controllers
                 Data = JsonSerializer.Serialize(new TicketUpdatedEventData
                 {
                     TicketId = reloaded.Id,
-                    UpdatedAt = DateTime.UtcNow
+                    UpdatedAt = DateTime.UtcNow,
+                    CompetitionDays = reloaded.TicketItems
+                        .Select(x => x.Day.Date)
+                        .OrderBy(x => x)
+                        .ToList()
                 })
             };
 
@@ -112,7 +117,11 @@ namespace IIS_backend.Controllers
                 Data = JsonSerializer.Serialize(new TicketUpdatedEventData
                 {
                     TicketId = reloaded.Id,
-                    UpdatedAt = DateTime.UtcNow
+                    UpdatedAt = DateTime.UtcNow,
+                    CompetitionDays = reloaded.TicketItems
+                        .Select(x => x.Day.Date)
+                        .OrderBy(x => x)
+                        .ToList()
                 })
             };
 
@@ -136,7 +145,11 @@ namespace IIS_backend.Controllers
                 Data = JsonSerializer.Serialize(new TicketCancelledEventData
                 {
                     TicketId = cancelled.Id,
-                    CancelledAt = DateTime.UtcNow
+                    CancelledAt = DateTime.UtcNow,
+                    CompetitionDays = cancelled.TicketItems
+                        .Select(x => x.Day.Date)
+                        .OrderBy(x => x)
+                        .ToList()
                 })
             };
 

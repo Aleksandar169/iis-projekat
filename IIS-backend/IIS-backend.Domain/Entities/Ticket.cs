@@ -25,9 +25,6 @@ public class Ticket
 
     public TicketStatus Status { get; set; } = TicketStatus.Active;
 
-    /// <summary>
-    /// “Šifra” za kasniji pristup (random string)
-    /// </summary>
     public string TicketCode { get; set; } = string.Empty;
 
     public List<TicketItem> TicketItems { get; set; } = new();
@@ -35,11 +32,9 @@ public class Ticket
     public PaymentSnapshot PaymentSnapshot { get; set; } = null!;
     public long PaymentSnapshotId { get; set; }
 
-    // Promo: izdata ovom ticket-u (obavezno)
     public long IssuedPromoCodeId { get; set; }
     public PromoCode IssuedPromoCode { get; set; } = null!;
 
-    // Promo: iskorišćena na ovom ticket-u (opciono)
     public long? UsedPromoCodeId { get; set; }
     public PromoCode? UsedPromoCode { get; set; }
 }

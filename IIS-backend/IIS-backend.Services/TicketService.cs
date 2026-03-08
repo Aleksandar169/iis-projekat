@@ -313,6 +313,8 @@ public class TicketService : ITicketService
     {
         var ticket = await _context.Tickets
             .Include(x => x.IssuedPromoCode)
+            .Include(x => x.TicketItems)
+                .ThenInclude(x => x.Day)
             .FirstOrDefaultAsync(x => x.Email == email && x.TicketCode == ticketCode);
 
         if (ticket == null) throw new Exception("Karta nije pronađena.");
