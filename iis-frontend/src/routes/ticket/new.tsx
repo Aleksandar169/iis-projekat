@@ -186,10 +186,7 @@ function NewTicketPage() {
             <div className="stack">
                 <section className="card">
                     <h2>Kupovina karte</h2>
-                    <p>
-                        Po arhitekturi C, zahtev za kreiranje karte prvo ide u queue. Nakon dobijene
-                        šifre proveravaš status karte na stranici za pregled.
-                    </p>
+
                 </section>
 
                 {error && <div className="alert error">{error}</div>}

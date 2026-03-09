@@ -36,11 +36,7 @@ public class TicketService : ITicketService
             .FirstOrDefaultAsync(x => x.Email == email && x.TicketCode == ticketCode);
     }
 
-    public async Task<TicketCalculationResult> CalculatePreview(
-        List<TicketSelection> selections,
-        string? promoCode,
-        long selectedCurrencyId)
-    {
+    public async Task<TicketCalculationResult> CalculatePreview(List<TicketSelection> selections, string? promoCode, long selectedCurrencyId){
         var competition = await _context.Competitions.FirstOrDefaultAsync();
         if (competition == null) throw new Exception("Competition not found.");
 

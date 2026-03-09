@@ -40,8 +40,7 @@ public class ZoneService : IZoneService
         var fromDb = await _context.Zones.FirstOrDefaultAsync(x => x.Id == zone.Id);
         if (fromDb == null) throw new Exception("Zone not found.");
 
-        // Ako postoje aktivne karte u zoni, ne menjaj capacity/price? (strogo po zadatku nema pravilo),
-        // ali minimalno spreči update kad ima aktivnih ticketItems, da ne unosiš haos:
+
         if (await _context.TicketItems.AnyAsync(x => x.ZoneId == zone.Id && x.Ticket.Status == TicketStatus.Active))
             throw new Exception("Izmena zone koja sadrži aktivne karte nije moguća.");
 

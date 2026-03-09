@@ -4,7 +4,7 @@ namespace IIS_backend.DTOs.Ticket;
 
 public class CreateTicketDto
 {
-    // Osnovni podaci (*)
+  
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
 
@@ -16,13 +16,13 @@ public class CreateTicketDto
     public string Email { get; set; } = string.Empty;
     public string ConfirmEmail { get; set; } = string.Empty;
 
-    // Selekcije: dan+zona
+
     public List<TicketSelectionDto> Selections { get; set; } = new();
 
-    // Promo (opciono)
+
     public string? PromoCode { get; set; }
 
-    // Valuta (mora biti dozvoljena)
+
     public long SelectedCurrencyId { get; set; }
 }
 

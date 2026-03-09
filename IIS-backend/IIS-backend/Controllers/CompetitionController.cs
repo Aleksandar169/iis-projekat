@@ -40,7 +40,6 @@ public class CompetitionController : ControllerBase
         return dto;
     }
 
-    // Admin: update basic info
     [HttpPut]
     public async Task<CompetitionBasicInfoDto> Put([FromBody] UpdateCompetitionDto dto)
     {
@@ -51,7 +50,6 @@ public class CompetitionController : ControllerBase
         return updated.ToBasicInfoDto(allowed);
     }
 
-    // Admin: set allowed currencies
     [HttpPut("allowed-currencies")]
     public async Task<List<long>> SetAllowed([FromBody] SetAllowedCurrenciesDto dto)
     {

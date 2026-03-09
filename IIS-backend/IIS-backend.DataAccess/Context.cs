@@ -36,11 +36,11 @@ public class Context : DbContext
             .HasForeignKey(x => x.CompetitionId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Currency unique
+        // Currency 
         modelBuilder.Entity<Currency>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Currency>().HasIndex(x => x.CurrencyName).IsUnique();
 
-        // CompCur M:N
+        // CompCur
         modelBuilder.Entity<CompetitionCurrency>()
             .HasKey(x => new { x.CompetitionId, x.CurrencyId });
 
@@ -71,7 +71,7 @@ public class Context : DbContext
             .HasIndex(x => x.TicketCode)
             .IsUnique();
 
-        // TicketItem uniqueness: one day per ticket
+        // TicketItem
         modelBuilder.Entity<TicketItem>()
             .HasIndex(x => new { x.TicketId, x.DayId })
             .IsUnique();
@@ -94,7 +94,7 @@ public class Context : DbContext
             .HasForeignKey(x => x.ZoneId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // PaymentSnapshot 1:1 Ticket
+        // PaymentSnapshot 
         modelBuilder.Entity<Ticket>()
             .HasOne(x => x.PaymentSnapshot)
             .WithMany()
@@ -107,12 +107,12 @@ public class Context : DbContext
             .HasForeignKey(x => x.SelectedCurrencyId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // PromoCode unique
+        // PromoCode 
         modelBuilder.Entity<PromoCode>()
             .HasIndex(x => x.Code)
             .IsUnique();
 
-        // Ticket <-> PromoCode (issued + used)
+        // issued - used
         modelBuilder.Entity<Ticket>()
             .HasOne(x => x.IssuedPromoCode)
             .WithOne(x => x.IssuedTicket)

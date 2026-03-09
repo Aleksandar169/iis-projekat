@@ -21,7 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.CustomSchemaIds(type => type.FullName); // ili type.ToString()
+    c.CustomSchemaIds(type => type.FullName); 
 });
 
 // configure exchange rate api settings

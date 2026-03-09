@@ -43,7 +43,6 @@ public class DayService : IDayService
         if (fromDb.Date.Date < DateTime.UtcNow.Date)
             throw new Exception("Izmena dana koji je prošao nije moguća.");
 
-        // ako ima ticket items, ne dozvoli update (isto kao primer)
         if (await _context.TicketItems.AnyAsync(x => x.DayId == day.Id && x.Ticket.Status == TicketStatus.Active))
             throw new Exception("Izmena dana koji sadrži aktivne karte nije moguća.");
 
