@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.37012.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11520.95 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IIS-backend", "IIS-backend\IIS-backend.csproj", "{A7FA6E14-08E9-4720-9A4F-3AEC99BFF763}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IIS-backend.Services", "IIS-backend.Services\IIS-backend.Services.csproj", "{219A6585-A835-4A36-8A20-CEF7F721DB4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IIS-backend.Services.Interfaces", "IIS-backend.Services.Interfaces\IIS-backend.Services.Interfaces.csproj", "{55653F78-1111-4A5D-99B5-363748452845}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IIS-portal-backend", "..\IIS-portal-backend\IIS-portal-backend.csproj", "{92DBA212-13BF-4DB8-9625-41706358B4FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{55653F78-1111-4A5D-99B5-363748452845}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55653F78-1111-4A5D-99B5-363748452845}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55653F78-1111-4A5D-99B5-363748452845}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92DBA212-13BF-4DB8-9625-41706358B4FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92DBA212-13BF-4DB8-9625-41706358B4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92DBA212-13BF-4DB8-9625-41706358B4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92DBA212-13BF-4DB8-9625-41706358B4FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
