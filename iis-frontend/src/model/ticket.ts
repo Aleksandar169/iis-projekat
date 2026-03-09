@@ -78,6 +78,7 @@ export interface CalculateTicketDto {
     selections: TicketSelectionDto[];
     promoCode?: string | null;
     selectedCurrencyId: number;
+    
 }
 
 export interface CalculatedTicketItemDto {
