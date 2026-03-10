@@ -1,10 +1,13 @@
-﻿namespace IIS_portal_backend.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+public class TicketSale
 {
-    public class TicketSale
-    {
-        public int Id { get; set; }
-        public int TicketId { get; set; }        
-        public DateTime PurchaseDate { get; set; } 
-        public DateTime CompetitionDay { get; set; } 
-    }
+    [Key] // Primarni ključ (autoincrement)
+    public int Id { get; set; }
+
+    public int TicketId { get; set; } // ID karte iz glavnog sistema (A1)
+
+    public DateTime PurchaseDate { get; set; } // Kada je kupljena
+
+    public DateTime CompetitionDay { get; set; } // Za koji konkretan dan trke važi ovaj red
 }

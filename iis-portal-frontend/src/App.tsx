@@ -7,9 +7,21 @@ function App() {
   const [purchaseDateData, setPurchaseDateData] = useState([]);
 
   useEffect(() => {
+  const fetchData = () => {
     getTicketsByRaceDay().then(res => setRaceDayData(res.data));
     getPurchasesByDate().then(res => setPurchaseDateData(res.data));
-  }, []);
+  };
+
+  fetchData();
+
+  
+  const interval = setInterval(() => {
+    fetchData();
+  }, 10000);
+
+
+  return () => clearInterval(interval);
+}, []);
 
   return (
     <div style={{ padding: '40px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>

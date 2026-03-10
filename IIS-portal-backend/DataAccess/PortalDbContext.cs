@@ -1,6 +1,6 @@
 ﻿namespace IIS_portal_backend.DataAccess
 {
-    using global::IIS_portal_backend.Models;
+  
     using Microsoft.EntityFrameworkCore;
   
 
@@ -17,7 +17,7 @@
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
-                // Opciono: Možeš definisati preciznije tipove podataka za SQL
+                
                 modelBuilder.Entity<TicketSale>(entity =>
                 {
                     entity.HasKey(e => e.Id);
