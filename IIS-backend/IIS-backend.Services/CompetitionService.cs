@@ -50,14 +50,14 @@ public class CompetitionService : ICompetitionService
         var competition = await _context.Competitions.FirstOrDefaultAsync();
         if (competition == null) throw new Exception("Competition not found.");
 
-        // remove existing
+
         var existing = await _context.CompetitionCurrencies
             .Where(x => x.CompetitionId == competition.Id)
             .ToListAsync();
 
         _context.CompetitionCurrencies.RemoveRange(existing);
 
-        // add new
+
         var currencies = await _context.Currencies.Where(c => currencyIds.Contains(c.Id)).ToListAsync();
         if (currencies.Count != currencyIds.Distinct().Count())
             throw new Exception("Jedna ili više valuta ne postoji.");
